@@ -1,0 +1,20 @@
+{
+  "name": "homechain-miner",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@tauri-apps/cli": "^2",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.9",
+    "tailwindcss": "^4.0.0",
+    "vite": "^5.0.0"
+  }
+}

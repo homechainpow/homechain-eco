@@ -1,0 +1,82 @@
+# --- Build Artifacts ---
+/target/
+**/target/
+**/dist/
+**/build/
+.vercel
+**/.vercel/
+
+# --- Dependency Managers ---
+node_modules/
+**/node_modules/
+.eslintcache
+.npm
+
+# --- Security & Credentials (Kritis!) ---
+CREDENTIALS.md
+docs/operations.md
+*.pem
+.env
+.env.*
+secrets.json
+
+# --- Android App Signing (SANGAT KRITIS!) ---
+*.jks
+*.keystore
+homechain-release.jks
+key.properties
+local.properties
+google-services.json
+
+# --- Database & State ---
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+*.sqlite
+*.sqlite-journal
+miner_queue.json
+10k_addresses_only.txt
+
+# --- Web Frameworks & Python ---
+.next/
+out/
+coverage/
+__pycache__/
+venv/
+.venv/
+# --- Intermediate / Temp Configs ---
+*.conf
+Cargo-vps4.toml
+*-old.txt
+p2p_bootnodes.txt
+reserved_static_peers.txt
+wallets_pool.txt
+
+# --- Sensitive Root-level & Operational Files ---
+chain_v2_vps1.db
+scripts/deploy_*
+scripts/launch_miners.sh
+scripts/resume_miners.sh
+scripts/restart_vps2.sh
+scripts/stop_234.sh
+scripts/vps2_single_miner.sh
+scripts/reduce_to_100.sh
+
+# --- Logs ---
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- IDE & OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# --- Sub-projects (Development) ---
+/homeswap-web/
+/homeswap-indexer/

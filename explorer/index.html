@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeChain Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="/assets/logo_explorer.png" />
+    <meta name="theme-color" content="#1e293b" />
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Top Utility Bar -->
+    <div class="top-bar">
+        <div class="nav-container">
+            <div style="display:flex; gap:1.5rem;">
+                <span>HOME Price: <a href="#">$0.0001245</a> <span class="text-secondary">(+2.4%)</span></span>
+                <span><i data-feather="loader" style="width:12px; height:12px;"></i> Gas: <b>1 Gwei</b></span>
+            </div>
+            <div style="display:flex; align-items:center;">
+                <button onclick="addHomeChainToMetaMask()"
+                    style="margin-right:1rem; display:flex; align-items:center; gap:5px; background:var(--card-bg); border:1px solid var(--border); color:var(--text-main); font-size:12px; padding:4px 10px; border-radius:6px; cursor:pointer; font-weight:600; text-decoration:none;"><img
+                        src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg"
+                        style="width:14px;height:14px;" alt="MM"> Add Network</button>
+                <a href="#" id="theme-toggle" onclick="toggleTheme(event)" style="color:inherit; margin-right:1rem;" title="Toggle Dark/Light Mode"><i data-feather="moon"
+                        style="width:14px;height:14px;"></i></a>
+                <a href="#" style="color:inherit;"><i data-feather="globe" style="width:14px;height:14px;"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation Header -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="/" class="brand">
+                <img src="/assets/logo_explorer.png" alt="HomeChain Logo"
+                    onerror="this.src='';this.alt='HOME';this.style.width='32px';this.style.height='32px';this.style.background='#3482f6';this.style.color='white';this.style.display='flex';this.style.alignItems='center';this.style.justifyContent='center';this.style.borderRadius='8px';this.style.fontSize='12px';">
+                HomeChain Explorer
+            </a>
+
+            <!-- Mobile Hamburger Button -->
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation">
+                <i data-feather="menu"></i>
+            </button>
+
+            <div class="header-right">
+                <!-- Global Search Bar (Persistent, Wide) -->
+                <div class="search-box navbar-search">
+                    <select class="search-filter" id="navbarFilter">
+                        <option value="all">All Filters</option>
+                        <option value="address">Addresses</option>
+                        <option value="tx">Transactions</option>
+                        <option value="block">Blocks</option>
+                    </select>
+                    <div style="position:relative; flex:1; display:flex; align-items:center;">
+                        <input type="text" class="search-input" id="globalSearch"
+                            placeholder="Search by Address / Txn Hash / Block"
+                            onkeyup="if(event.key==='Enter') executeSearch(); toggleClearBtn();">
+                        <span id="clearSearchBtn" class="clear-btn" onclick="clearSearch()"><i
+                                data-feather="x"></i></span>
+                    </div>
+                    <button class="search-btn" onclick="executeSearch()"><i data-feather="search"
+                            style="width:16px;"></i></button>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="nav-links">
+                    <div class="nav-item"><a href="/">Home</a></div>
+                    <div class="nav-item">
+                        <a href="#">Blockchain <i data-feather="chevron-down" style="width:14px;"></i></a>
+                        <div class="dropdown-menu">
+                            <a href="/?route=blocks">View Blocks</a>
+                            <a href="/?route=txs">View Transactions</a>
+                            <a href="/?route=coming-soon">View Pending Txns</a>
+                            <a href="/?route=top-accounts">Top Accounts</a>
+                        </div>
+                    </div>
+                    <div class="nav-item">
+                        <a href="#">Nodes <i data-feather="chevron-down" style="width:14px;"></i></a>
+                        <div class="dropdown-menu">
+                            <a href="/?route=validators">RPC Node List</a>
+                            <a href="/?route=coming-soon">Network Stats</a>
+                            <a href="/?route=coming-soon">Mining Info</a>
+                        </div>
+                    </div>
+                    <div class="nav-item">
+                        <a href="#">Tokens <i data-feather="chevron-down" style="width:14px;"></i></a>
+                        <div class="dropdown-menu">
+                            <a href="/?route=tokens">HRC-20 Top Tokens</a>
+                            <a href="/?route=coming-soon">HRC-721 Top Tokens</a>
+                            <a href="/?route=coming-soon">Token Transfers</a>
+                        </div>
+                    </div>
+                    <div class="nav-item">
+                        <a href="#">NFTs <i data-feather="chevron-down" style="width:14px;"></i></a>
+                        <div class="dropdown-menu">
+                            <a href="/?route=nfts">Top Collections</a>
+                            <a href="/?route=coming-soon">Latest Transfers</a>
+                        </div>
+                    </div>
+                    <div class="nav-item">
+                        <a href="#">Resources <i data-feather="chevron-down" style="width:14px;"></i></a>
+                        <div class="dropdown-menu">
+                            <a href="/?route=coming-soon">Charts & Stats</a>
+                            <a href="/?route=coming-soon">Top Statistics</a>
+                            <a href="/?route=coming-soon">Directory</a>
+                        </div>
+                    </div>
+                    <div class="nav-item">
+                        <a href="#">Developers <i data-feather="chevron-down" style="width:14px;"></i></a>
+                        <div class="dropdown-menu">
+                            <a href="/?route=coming-soon">API Documentation</a>
+                            <a href="/?route=coming-soon">Verify Contract</a>
+                            <a href="/?route=coming-soon">Bytecode to Opcode</a>
+                        </div>
+                    </div>
+                    <div class="nav-item"><a href="/?route=coming-soon" style="color:var(--text-muted);"><i
+                                data-feather="user" style="width:16px;"></i> Sign In</a></div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- The View Container (Populated by app.js router) -->
+    <main id="app-view"></main>
+
+    <!-- 4-Column Footer Parity -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <img src="/assets/logo_explorer.png" alt="" onerror="this.style.display='none'">
+                    <div class="text-main" style="font-weight:600; font-size:1.1rem; margin-bottom:10px;">Powered by
+                        HomeChain</div>
+                    <p class="text-muted" style="font-size:0.85rem; line-height:1.6;">
+                        HomeChain Explorer is a Block Explorer and Analytics Platform for the HomeChain L1 Network.
+                    </p>
+                    <button onclick="addHomeChainToMetaMask()"
+                        style="margin-top:12px; display:flex; align-items:center; gap:8px; background:var(--accent); border:none; color:white; font-size:13px; padding:8px 16px; border-radius:8px; cursor:pointer; font-weight:600;"><img
+                            src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg"
+                            style="width:40px;height:40px;" alt="MM"> Add to MetaMask</button>
+                </div>
+                <div>
+                    <div class="footer-title">Company</div>
+                    <ul class="footer-list">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Brand Assets</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="footer-title">Community</div>
+                    <ul class="footer-list">
+                        <li><a href="#">API Documentation</a></li>
+                        <li><a href="#">Knowledge Base</a></li>
+                        <li><a href="#">Network Status</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="footer-title">Products & Services</div>
+                    <ul class="footer-list">
+                        <li><a href="#">Advertise</a></li>
+                        <li><a href="#">Explorer-as-a-Service (EaaS)</a></li>
+                        <li><a href="#">API Plans</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div>HomeChain Explorer &copy; 2026</div>
+                <div class="mono" id="node-status">Checking Node Sync...</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,11 @@
+[workspace]
+members = [
+    "core/home-crypto",
+    "core/home-core",
+    "core/home-node",
+    "core/home-miner",
+    "apps/windows-miner/src-tauri",
+    "apps/miner-auto-rotate/src-tauri",
+]
+resolver = "2"
+
