@@ -55,13 +55,8 @@ wallets_pool.txt
 
 # --- Sensitive Root-level & Operational Files ---
 chain_v2_vps1.db
-scripts/deploy_*
-scripts/launch_miners.sh
-scripts/resume_miners.sh
-scripts/restart_vps2.sh
-scripts/stop_234.sh
-scripts/vps2_single_miner.sh
-scripts/reduce_to_100.sh
+scripts/
+scripts/**
 
 # --- Logs ---
 *.log
