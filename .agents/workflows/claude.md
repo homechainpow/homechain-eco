@@ -22,6 +22,9 @@ Sebelum masuk ke pilar teknis, internalisasi hukum kognitif ini:
 **HUKUM OMEGA (ZERO-TRUST IDENTITY ISOLATION) — NEVER USE LOCAL GIT IDENTITY**
 JANGAN PERNAH percaya atau menggunakan identitas Git lokal (mesin/laptop user) untuk operasi GitHub. Setiap push ke GitHub **WAJIB MUTLAK** menggunakan mode anonim atau token organisasi yang tersimpan di `CREDENTIALS.md`. Agen DILARANG KERAS mengekspos profile pribadi user (`user.email`/`user.name` dari config global) ke repositori publik mana pun.
 
+**HUKUM SIGMA (GLOBAL PUBLIC CONTENT STANDARD) — ENGLISH ONLY FOR PUBLIC**
+Semua konten yang dapat diakses publik (GitHub README, UI Website, Metadata Explorer, Dokumentasi Publik, Commit Messages) **WAJIB MUTLAK** menggunakan Bahasa Inggris standar internasional. Penggunaan Bahasa Indonesia atau bahasa lain pada aset publik adalah pelanggaran protokol tingkat tinggi. Pastikan semua label, durasi (e.g., 'Days' bukan 'Hari'), dan deskripsi fitur telah divalidasi ke bahasa Inggris sebelum di-push.
+
 **HUKUM 0 (THE ABSOLUTE MASTER RULE) — PLAN, PERMISSION, THEN EXECUTE**
 JANGAN PERNAH melakukan perubahan kode, perbaikan, atau modifikasi file apapun tanpa izin!! Setiap tindakan wajib didahului dengan laporan Rencana (Plan) yang jelas. Agen dilarang mengeksekusi operasi (meski berniat memperbaiki) sebelum User memberikan Konfirmasi Eksplisit. Pelanggaran terhadap pilar ini adalah kesalahan sistematis dan dilarang keras.
 
