@@ -812,11 +812,15 @@ async fn api_get_transactions(
     let offset = (page - 1) * limit;
 
     let s = state.read().unwrap();
+    let total = s.storage.get_transactions_count().unwrap_or(0);
+    let total_pages = if total == 0 { 1 } else { (total + limit as u64 - 1) / limit as u64 };
     match s.storage.get_recent_transactions(limit, offset) {
         Ok(txs) => Json(serde_json::json!({
             "status": "success",
             "page": page,
             "limit": limit,
+            "total": total,
+            "total_pages": total_pages,
             "data": txs
         })),
         Err(e) => Json(serde_json::json!({
@@ -835,7 +839,8 @@ async fn api_get_blocks(
     let offset = (page - 1) * limit;
 
     let s = state.read().unwrap();
-    let total = s.chain.len();
+    let total = s.storage.get_block_count().unwrap_or(0);
+    let total_pages = if total == 0 { 1 } else { (total + limit as u64 - 1) / limit as u64 };
     
     match s.storage.get_blocks_with_tx_count(limit, offset) {
         Ok(blocks) => Json(serde_json::json!({
@@ -843,6 +848,7 @@ async fn api_get_blocks(
             "page": page,
             "limit": limit,
             "total": total,
+            "total_pages": total_pages,
             "data": blocks
         })),
         Err(e) => Json(serde_json::json!({
@@ -863,6 +869,7 @@ async fn api_get_block_transactions(
 
     let s = state.read().unwrap();
     let total = s.storage.get_block_transaction_count(idx).unwrap_or(0);
+    let total_pages = if total == 0 { 1 } else { (total + limit as u64 - 1) / limit as u64 };
     
     match s.storage.get_block_transactions(idx, limit, offset) {
         Ok(txs) => Json(serde_json::json!({
@@ -870,6 +877,7 @@ async fn api_get_block_transactions(
             "page": page,
             "limit": limit,
             "total": total,
+            "total_pages": total_pages,
             "data": txs
         })),
         Err(e) => Json(serde_json::json!({
@@ -889,12 +897,16 @@ async fn api_get_address_history(
     let offset = (page - 1) * limit;
 
     let s = state.read().unwrap();
+    let total = s.storage.get_address_transactions_count(&addr).unwrap_or(0);
+    let total_pages = if total == 0 { 1 } else { (total + limit as u64 - 1) / limit as u64 };
     match s.storage.get_address_transactions(&addr, limit, offset) {
         Ok(txs) => Json(serde_json::json!({
             "status": "success",
             "address": addr,
             "page": page,
             "limit": limit,
+            "total": total,
+            "total_pages": total_pages,
             "data": txs
         })),
         Err(e) => Json(serde_json::json!({

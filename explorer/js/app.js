@@ -468,7 +468,7 @@ async function renderListBlocks(page, limit) {
     fetch(`${NODE_URL}api/blocks?page=${page}&limit=${limit}`).then(r => r.json()).then(res => {
         if(res.status !== 'success') return;
         const totalBlocks = res.total || 0;
-        const totalPages = Math.ceil(totalBlocks / limit);
+        const totalPages = res.total_pages || Math.ceil(totalBlocks / limit) || 1;
         const paged = res.data || [];
 
         let paginationHtml = `
@@ -544,10 +544,10 @@ async function renderListTxs(page, limit) {
     fetch(`${NODE_URL}api/txs?limit=${limit}&page=${page}`).then(r => r.json()).then(res => {
         if(res.status === 'success') {
             const totalTxs = res.total || res.data.length;
-            const totalPages = Math.ceil(totalTxs / limit) || 1;
+            const totalPages = res.total_pages || Math.ceil(totalTxs / limit) || 1;
             let paginationHtml = `
             <div style="padding:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                <span class="text-muted" style="font-size:0.8rem;">Page ${page} of ${totalPages}</span>
+                <span class="text-muted" style="font-size:0.8rem;">Page ${page} of ${totalPages} (${totalTxs.toLocaleString()} total txs)</span>
                 <div style="display:flex; gap:6px; align-items:center;">
                     <a href="/?route=txs&p=1&limit=${limit}" class="btn-sm" ${page<=1?'style="pointer-events:none;opacity:0.4"':''}>First</a>
                     <a href="/?route=txs&p=${Math.max(1, page-1)}&limit=${limit}" class="btn-sm" ${page<=1?'style="pointer-events:none;opacity:0.4"':''}>‹ Prev</a>
@@ -670,17 +670,18 @@ async function renderAddress(addr, page, limit) {
             });
             tHtml += '</tbody></table></div>';
             
-            const parsedLimit = parseInt(limit);
-            const hasNext = res.data.length === parsedLimit;
+            const totalTxs = res.total || res.data.length;
+            const totalPages = res.total_pages || Math.ceil(totalTxs / limit) || 1;
             
             tHtml += `
             <div style="padding:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                <span class="text-muted" style="font-size:0.8rem;">Page ${page}</span>
+                <span class="text-muted" style="font-size:0.8rem;">Page ${page} of ${totalPages} (${totalTxs.toLocaleString()} total txs)</span>
                 <div style="display:flex; gap:6px; align-items:center;">
                     <a href="/?address=${addr}&p=1&limit=${limit}" class="btn-sm" ${page<=1?'style="pointer-events:none;opacity:0.4"':''}>First</a>
                     <a href="/?address=${addr}&p=${Math.max(1, parseInt(page)-1)}&limit=${limit}" class="btn-sm" ${page<=1?'style="pointer-events:none;opacity:0.4"':''}>‹ Prev</a>
                     <span class="btn-sm" style="background:var(--accent); color:white; pointer-events:none;">${page}</span>
-                    <a href="/?address=${addr}&p=${parseInt(page)+1}&limit=${limit}" class="btn-sm" ${!hasNext?'style="pointer-events:none;opacity:0.4"':''}>Next ›</a>
+                    <a href="/?address=${addr}&p=${Math.min(totalPages, parseInt(page)+1)}&limit=${limit}" class="btn-sm" ${page>=totalPages?'style="pointer-events:none;opacity:0.4"':''}>Next ›</a>
+                    <a href="/?address=${addr}&p=${totalPages}&limit=${limit}" class="btn-sm" ${page>=totalPages?'style="pointer-events:none;opacity:0.4"':''}>Last</a>
                 </div>
             </div>`;
             document.getElementById('address-tx-table').innerHTML = tHtml;

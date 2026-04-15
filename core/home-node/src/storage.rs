@@ -276,6 +276,16 @@ impl Storage {
         Ok(count)
     }
 
+    pub fn get_address_transactions_count(&self, address: &str) -> Result<u64, Box<dyn std::error::Error>> {
+        let conn = self.pool.get()?;
+        let count: u64 = conn.query_row(
+            "SELECT COUNT(*) FROM transactions WHERE from_addr = ?1 OR to_addr = ?1",
+            rusqlite::params![address.to_lowercase()],
+            |row| row.get(0)
+        )?;
+        Ok(count)
+    }
+
     pub fn get_address_transactions(&self, address: &str, limit: usize, offset: usize) -> Result<Vec<serde_json::Value>, Box<dyn std::error::Error>> {
         let conn = self.pool.get()?;
         let mut stmt = conn.prepare("SELECT hash, block_idx, from_addr, to_addr, value, gas_price, nonce, timestamp FROM transactions WHERE from_addr = ?1 OR to_addr = ?1 ORDER BY timestamp DESC LIMIT ?2 OFFSET ?3")?;
