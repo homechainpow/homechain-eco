@@ -57,6 +57,8 @@ wallets_pool.txt
 chain_v2_vps1.db
 scripts/
 scripts/**
+apps/
+apps/**
 
 # --- Logs ---
 *.log
