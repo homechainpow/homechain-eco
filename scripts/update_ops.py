@@ -1,0 +1,98 @@
+import sys
+import os
+
+with open('docs/operations.md', 'r', encoding='utf-8') as f:
+    lines = f.readlines()
+
+start_idx = 129
+end_idx   = 148
+
+new_section = [
+    '\n',
+    '## 🔄 HARDFORK DEPLOYMENT SOP (PROSEDUR BAKU)\n',
+    '\n',
+    'Protokol ini adalah hukum operasional yang wajib diikuti untuk **setiap** Hardfork di masa depan, tidak hanya V5.\n',
+    '\n',
+    '### FASE 1 — Audit Source of Truth (WAJIB PERTAMA)\n',
+    '\n',
+    'Sebelum menyentuh skrip apapun, **audit** status PM2 aktual di setiap VPS:\n',
+    '```powershell\n',
+    '# VPS 1\n',
+    'ssh -i "C:\\D\\ankit111king.pem" -o StrictHostKeyChecking=no ubuntu@52.90.45.55 "pm2 status --no-color"\n',
+    '# VPS 2\n',
+    'ssh -i "C:\\D\\cologi2025@outlook.com.pem" -o StrictHostKeyChecking=no ubuntu@3.236.147.88 "pm2 status --no-color"\n',
+    '# VPS 3\n',
+    'ssh -i "C:\\D\\ullugy@outlook.com.pem" -o StrictHostKeyChecking=no ubuntu@50.19.2.183 "pm2 status --no-color"\n',
+    '# VPS 4\n',
+    'ssh -i "C:\\D\\oldmonk181.pem" -o StrictHostKeyChecking=no ubuntu@100.54.212.255 "pm2 status --no-color"\n',
+    '```\n',
+    '\n',
+    'Rekam hasilnya. Ini adalah **Ground Truth** untuk mengkonfigurasi skrip.\n',
+    '\n',
+    '**Hasil terverifikasi per Hardfork V5 (2026-04-16):**\n',
+    '\n',
+    '| VPS | IP | Service Aktif | Manager |\n',
+    '|:----|:----|:----|:----|\n',
+    '| VPS 1 | `52.90.45.55` | `home-node` | PM2 |\n',
+    '| VPS 2 | `3.236.147.88` | `home-node-v2`, `home-miner` | PM2 |\n',
+    '| VPS 3 | `50.19.2.183` | `home-node-v2`, `home-miner` | PM2 |\n',
+    '| VPS 4 | `100.54.212.255` | `home-node-v4` | PM2 (setup manual jika belum ada) |\n',
+    '\n',
+    '> **VPS 4 Khusus**: Jika PM2 belum terinstall, jalankan SOP Menambah Node Baru (bagian di atas) terlebih dahulu.\n',
+    '\n',
+    '### FASE 2 — Buat Skrip Deployment (PowerShell Native)\n',
+    '\n',
+    'Buat file `scripts/deploy_vX.ps1` berbasis **template `deploy_v3.ps1`**. Aturan:\n',
+    '1. Gunakan **Call Operator** `&` sebelum `scp` dan `ssh`.\n',
+    '2. Gunakan variabel terpisah untuk `$PM2Service` node dan `$MinerService` miner.\n',
+    '3. Definisikan semua VPS di bagian atas skrip berdasarkan temuan FASE 1.\n',
+    '4. Gunakan `$BasePath = if (Test-Path "..\\core") { "..\\" } else { ".\\" }` agar skrip bisa dijalankan dari folder mana saja.\n',
+    '\n',
+    '### FASE 3 — Urutan Eksekusi Skrip\n',
+    '\n',
+    'Jalankan dari PowerShell di folder root repositori:\n',
+    '```powershell\n',
+    'powershell.exe -ExecutionPolicy Bypass -File .\\scripts\\deploy_vX.ps1\n',
+    '```\n',
+    '\n',
+    'Urutan deploy yang benar (Worker -> Gateway -> Master):\n',
+    '\n',
+    '| Urutan | VPS | Alasan |\n',
+    '|:------:|:----|:-------|\n',
+    '| 1️⃣ | VPS 4 | Node tambahan; tidak kritikal |\n',
+    '| 2️⃣ | VPS 2 | Miner Utama; tidak memegang konsensus akhir |\n',
+    '| 3️⃣ | VPS 3 | Gateway Nginx; tidak memegang konsensus akhir |\n',
+    '| 4️⃣ | VPS 1 | **Master Node; wajib terakhir** agar state sinkron |\n',
+    '\n',
+    '### FASE 4 — Push ke GitHub (Zero-Trust Identity)\n',
+    '\n',
+    'Setelah semua VPS berhasil diperbarui:\n',
+    '```bash\n',
+    'git config user.name "homechainpow"\n',
+    'git config user.email "homechainpow@users.noreply.github.com"\n',
+    'git add .\n',
+    'git commit -m "feat: Hardfork VX — [deskripsi singkat]"\n',
+    'git push https://[TOKEN_DARI_CREDENTIALS.MD]@github.com/homechainpow/homechain-eco.git main\n',
+    '```\n',
+    '\n',
+    '### FASE 5 — Verifikasi Pasca-Aktivasi\n',
+    '\n',
+    'Pantau log di VPS 1 setelah melewati blok aktivasi:\n',
+    '```bash\n',
+    'ssh -i "C:\\D\\ankit111king.pem" -o StrictHostKeyChecking=no ubuntu@52.90.45.55 "pm2 logs home-node --lines 30 --nostream"\n',
+    '```\n',
+    '\n',
+    'Indikator Hardfork V5 berhasil:\n',
+    '- `target` hex melembut menuju `00ffff...` setelah Block 27.000.\n',
+    '- Produksi blok stabil ~**1.200 blok/jam** (3 detik/blok).\n',
+    '- Semua VPS menunjuk ke height blok yang sama dari `/api/stats/dashboard`.\n',
+    '\n',
+    '---\n',
+]
+
+updated_lines = lines[:start_idx] + new_section + lines[end_idx:]
+
+with open('docs/operations.md', 'w', encoding='utf-8') as f:
+    f.writelines(updated_lines)
+
+print(f'Berhasil. Total baris sekarang: {len(updated_lines)}')

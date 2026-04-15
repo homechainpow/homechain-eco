@@ -109,6 +109,17 @@ pub fn make_contract_info(
 /// All blocks below this height use the legacy V1/V2/V3 execution path.
 pub const HARDFORK_V4_HEIGHT: u64 = 20_100;
 
+/// V5 Hardfork: DDA Precision Calibration (3s Target).
+/// Raises the difficulty ceiling from 5-hex-zero to 2-hex-zero,
+/// allowing DDA to find equilibrium at true 3-second blocks.
+/// With 10 miners (~5M H/s combined), DDA will naturally tighten
+/// from the easy ceiling down to the 3s sweet spot.
+pub const HARDFORK_V5_HEIGHT: u64 = 27_000;
+
+/// The relaxed ceiling target for V5+.
+/// 2 hex zeros = 8 leading zero bits.
+pub const V5_CEILING_TARGET: &str = "00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+
 /// Block gas limit for V4
 pub const BLOCK_GAS_LIMIT: u64 = 15_000_000;
 

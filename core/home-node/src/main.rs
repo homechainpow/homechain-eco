@@ -438,6 +438,15 @@ impl NodeState {
         let genesis_target = U256::from_str_radix(initial_target_str, 16).unwrap();
         let current_height = self.chain.len() as u64;
 
+        // ═══════════════════════════════════════════════════════════════════
+        // V5 HARDFORK: Dynamic Ceiling Selection
+        // ═══════════════════════════════════════════════════════════════════
+        let ceiling = if current_height >= crate::evm_types::HARDFORK_V5_HEIGHT {
+            U256::from_str_radix(crate::evm_types::V5_CEILING_TARGET, 16).unwrap()
+        } else {
+            genesis_target
+        };
+
         if current_height < 2 {
             return initial_target_str.to_string();
         }
@@ -473,7 +482,7 @@ impl NodeState {
 
             if new_target > max_easier { new_target = max_easier; }
             if new_target < max_harder { new_target = max_harder; }
-            if new_target > genesis_target { new_target = genesis_target; }
+            if new_target > ceiling { new_target = ceiling; }
 
             return format!("{:0>64x}", new_target);
         }
@@ -507,7 +516,7 @@ impl NodeState {
             if new_target < max_down { new_target = max_down; }
         }
         
-        if new_target > genesis_target { new_target = genesis_target; }
+        if new_target > ceiling { new_target = ceiling; }
 
         format!("{:0>64x}", new_target)
     }

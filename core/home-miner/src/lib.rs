@@ -95,13 +95,13 @@ pub async fn run_mining_worker(
             .send().await {
             Ok(r) => r,
             Err(_) => {
-                tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+                tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
                 continue;
             }
         };
 
         if !res.status().is_success() {
-            tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+            tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
             continue;
         }
 
@@ -274,7 +274,7 @@ pub async fn run_mining_worker(
             let _ = client.post(format!("{}/mining/submit", node_url)).json(&payload).send().await;
         }
 
-        tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
+        tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
     }
 
     Ok(())
