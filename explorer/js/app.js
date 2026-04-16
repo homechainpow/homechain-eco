@@ -468,12 +468,17 @@ async function renderListBlocks(page, limit) {
     fetch(`${NODE_URL}api/blocks?page=${page}&limit=${limit}`).then(r => r.json()).then(res => {
         if(res.status !== 'success') return;
         const totalBlocks = res.total || 0;
+        const chainHeight = res.chain_height || totalBlocks;
         const totalPages = res.total_pages || Math.ceil(totalBlocks / limit) || 1;
         const paged = res.data || [];
 
+        let descText = totalBlocks === chainHeight 
+            ? `(${totalBlocks.toLocaleString()} total blocks)` 
+            : `(Showing recent ${totalBlocks.toLocaleString()} blocks of ${chainHeight.toLocaleString()} total chain height)`;
+
         let paginationHtml = `
         <div style="padding:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-            <span class="text-muted" style="font-size:0.8rem;">Page ${page} of ${totalPages} (${totalBlocks.toLocaleString()} total blocks)</span>
+            <span class="text-muted" style="font-size:0.8rem;">Page ${page} of ${totalPages} ${descText}</span>
             <div style="display:flex; gap:6px; align-items:center;">
                 <a href="/?route=blocks&p=1&limit=${limit}" class="btn-sm" ${page<=1?'style="pointer-events:none;opacity:0.4"':''}>First</a>
                 <a href="/?route=blocks&p=${Math.max(1, page-1)}&limit=${limit}" class="btn-sm" ${page<=1?'style="pointer-events:none;opacity:0.4"':''}>‹ Prev</a>

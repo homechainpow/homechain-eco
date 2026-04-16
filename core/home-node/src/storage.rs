@@ -266,14 +266,22 @@ impl Storage {
     }
     pub fn get_block_count(&self) -> Result<u64, Box<dyn std::error::Error>> {
         let conn = self.pool.get()?;
-        let count: u64 = conn.query_row("SELECT COUNT(*) FROM blocks", [], |row| row.get(0))?;
+        // Menggunakan MAX(rowid) O(1) agar tidak full table scan (Penyebab Web Lemot)
+        let count: u64 = conn.query_row("SELECT COALESCE(MAX(rowid), 0) FROM blocks", [], |row| row.get(0))?;
         Ok(count)
     }
 
     pub fn get_transactions_count(&self) -> Result<u64, Box<dyn std::error::Error>> {
         let conn = self.pool.get()?;
-        let count: u64 = conn.query_row("SELECT COUNT(*) FROM transactions", [], |row| row.get(0))?;
+        // Menggunakan MAX(rowid) O(1) agar tidak full table scan
+        let count: u64 = conn.query_row("SELECT COALESCE(MAX(rowid), 0) FROM transactions", [], |row| row.get(0))?;
         Ok(count)
+    }
+
+    pub fn get_highest_block_index(&self) -> Result<u64, Box<dyn std::error::Error>> {
+        let conn = self.pool.get()?;
+        let idx: u64 = conn.query_row("SELECT COALESCE(MAX(idx), 0) FROM blocks", [], |row| row.get(0))?;
+        Ok(idx)
     }
 
     pub fn get_address_transactions_count(&self, address: &str) -> Result<u64, Box<dyn std::error::Error>> {

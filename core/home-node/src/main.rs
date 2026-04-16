@@ -840,6 +840,7 @@ async fn api_get_blocks(
 
     let s = state.read().unwrap();
     let total = s.storage.get_block_count().unwrap_or(0);
+    let chain_height = s.storage.get_highest_block_index().unwrap_or(0);
     let total_pages = if total == 0 { 1 } else { (total + limit as u64 - 1) / limit as u64 };
     
     match s.storage.get_blocks_with_tx_count(limit, offset) {
@@ -848,6 +849,7 @@ async fn api_get_blocks(
             "page": page,
             "limit": limit,
             "total": total,
+            "chain_height": chain_height,
             "total_pages": total_pages,
             "data": blocks
         })),
