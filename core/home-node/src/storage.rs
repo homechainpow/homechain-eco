@@ -44,6 +44,8 @@ impl Storage {
         conn.execute("CREATE INDEX IF NOT EXISTS idx_transactions_from ON transactions(from_addr)", [])?;
         conn.execute("CREATE INDEX IF NOT EXISTS idx_transactions_to ON transactions(to_addr)", [])?;
         conn.execute("CREATE INDEX IF NOT EXISTS idx_transactions_block ON transactions(block_idx)", [])?;
+        // Anti-Lemot: Index timestamp untuk ORDER BY timestamp DESC O(log N)
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_transactions_timestamp ON transactions(timestamp DESC)", [])?;
 
         // V2: State snapshot table for instant node booting
         conn.execute(
